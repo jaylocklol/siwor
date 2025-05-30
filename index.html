@@ -1,1 +1,371 @@
-hell
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siwor Bonaire Radio - Caribbean Radio Hub</title>
+    <style>
+        :root {
+            --primary: #0038A8; /* Bonaire blue */
+            --secondary: #F9D70B; /* Bonaire yellow */
+            --accent: #E5173D; /* Caribbean red */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .country-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        
+        .country-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--secondary);
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .country-btn:hover, .country-btn.active {
+            background-color: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .radio-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 1rem;
+        }
+        
+        .radio-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .radio-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .radio-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .radio-info {
+            padding: 1rem;
+        }
+        
+        .radio-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .radio-slogan {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .radio-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .play-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .play-btn:hover {
+            background-color: var(--accent);
+        }
+        
+        .volume-control {
+            width: 100px;
+        }
+        
+        .now-playing {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .now-playing-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .now-playing-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 60px; /* Space for now playing bar */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Siwor Bonaire Radio</div>
+        <div class="tagline">Your gateway to Caribbean sounds</div>
+        
+        <div class="country-selector">
+            <button class="country-btn active" data-country="bonaire">Bonaire</button>
+            <button class="country-btn" data-country="curacao">Curaçao</button>
+            <button class="country-btn" data-country="aruba">Aruba</button>
+            <button class="country-btn" data-country="saba">Saba</button>
+            <button class="country-btn" data-country="sintmaarten">Sint Maarten</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="radio-container" id="radio-stations">
+            <!-- Radio stations will be loaded here -->
+        </div>
+    </main>
+    
+    <div class="now-playing" id="now-playing" style="display: none;">
+        <div class="now-playing-info">
+            <img src="" alt="Station Logo" class="now-playing-image" id="now-playing-image">
+            <div>
+                <div id="now-playing-name">Station Name</div>
+                <div id="now-playing-slogan">Station Slogan</div>
+            </div>
+        </div>
+        <div class="radio-controls">
+            <audio id="audio-player" controls></audio>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-control" id="volume-control">
+        </div>
+    </div>
+    
+    <footer>
+        &copy; 2023 Siwor Bonaire Radio | All rights reserved
+    </footer>
+    
+    <script>
+        // Country data (you would fetch this from your PHP files in a real implementation)
+        const countries = {
+            bonaire: {
+                name: "Bonaire",
+                endpoint: "https://siwor.icu/countries/bon.php",
+                stations: []
+            },
+            curacao: {
+                name: "Curaçao",
+                endpoint: "https://siwor.icu/countries/cur.php",
+                stations: []
+            },
+            aruba: {
+                name: "Aruba",
+                endpoint: "https://siwor.icu/countries/aru.php",
+                stations: []
+            },
+            saba: {
+                name: "Saba",
+                endpoint: "https://siwor.icu/countries/sab.php",
+                stations: []
+            },
+            sintmaarten: {
+                name: "Sint Maarten",
+                endpoint: "https://siwor.icu/countries/sxm.php",
+                stations: []
+            }
+        };
+        
+        // DOM elements
+        const radioContainer = document.getElementById('radio-stations');
+        const countryButtons = document.querySelectorAll('.country-btn');
+        const nowPlayingBar = document.getElementById('now-playing');
+        const audioPlayer = document.getElementById('audio-player');
+        const volumeControl = document.getElementById('volume-control');
+        
+        // Currently playing station
+        let currentStation = null;
+        
+        // Load stations for a country
+        async function loadStations(countryCode) {
+            try {
+                // In a real implementation, you would fetch from the endpoint:
+                // const response = await fetch(countries[countryCode].endpoint);
+                // const data = await response.json();
+                
+                // For this example, we'll use mock data
+                const mockData = {
+                    data: [
+                        {
+                            id: 101,
+                            website: "https://www.bonairefm.com",
+                            type: "radio",
+                            images: {
+                                logo: "https://via.placeholder.com/300x150?text=Bonaire+FM",
+                                avatar: "https://via.placeholder.com/125x125?text=Bonaire+FM",
+                                thumbnail: "https://via.placeholder.com/197x125?text=Bonaire+FM"
+                            },
+                            views: 450,
+                            cat: "Variety",
+                            slogan: "The Voice of Bonaire",
+                            name: "Bonaire FM 92.5",
+                            videoStatus: 0,
+                            nameId: "bonairefm925",
+                            url: "https://stream.example.com/bonairefm",
+                            mimeType: "audio"
+                        },
+                        {
+                            id: 102,
+                            website: "https://www.caribbeanhits.com",
+                            type: "radio",
+                            images: {
+                                logo: "https://via.placeholder.com/300x150?text=Caribbean+Hits",
+                                avatar: "https://via.placeholder.com/125x125?text=Caribbean+Hits",
+                                thumbnail: "https://via.placeholder.com/197x125?text=Caribbean+Hits"
+                            },
+                            views: 320,
+                            cat: "Music",
+                            slogan: "All the Caribbean hits",
+                            name: "Caribbean Hits 98.7",
+                            videoStatus: 0,
+                            nameId: "caribbeanhits987",
+                            url: "https://stream.example.com/caribbeanhits",
+                            mimeType: "audio"
+                        }
+                    ]
+                };
+                
+                countries[countryCode].stations = mockData.data;
+                displayStations(countryCode);
+            } catch (error) {
+                console.error("Error loading stations:", error);
+                radioContainer.innerHTML = `<div class="error">Failed to load stations. Please try again later.</div>`;
+            }
+        }
+        
+        // Display stations for a country
+        function displayStations(countryCode) {
+            const stations = countries[countryCode].stations;
+            
+            if (!stations || stations.length === 0) {
+                radioContainer.innerHTML = `<div class="no-stations">No stations found for ${countries[countryCode].name}.</div>`;
+                return;
+            }
+            
+            radioContainer.innerHTML = stations.map(station => `
+                <div class="radio-card" data-id="${station.id}">
+                    <img src="${station.images.logo}" alt="${station.name}" class="radio-image">
+                    <div class="radio-info">
+                        <div class="radio-name">${station.name}</div>
+                        <div class="radio-slogan">${station.slogan}</div>
+                        <div class="radio-controls">
+                            <button class="play-btn" data-url="${station.url}">Play</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to play buttons
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const stationId = this.closest('.radio-card').dataset.id;
+                    const station = stations.find(s => s.id == stationId);
+                    playStation(station);
+                });
+            });
+        }
+        
+        // Play a station
+        function playStation(station) {
+            currentStation = station;
+            
+            // Update now playing bar
+            document.getElementById('now-playing-name').textContent = station.name;
+            document.getElementById('now-playing-slogan').textContent = station.slogan;
+            document.getElementById('now-playing-image').src = station.images.avatar;
+            
+            // Set audio source
+            audioPlayer.src = station.url;
+            audioPlayer.play();
+            
+            // Show now playing bar
+            nowPlayingBar.style.display = 'flex';
+        }
+        
+        // Event listeners
+        countryButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                countryButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Load stations for selected country
+                loadStations(this.dataset.country);
+            });
+        });
+        
+        volumeControl.addEventListener('input', function() {
+            audioPlayer.volume = this.value;
+        });
+        
+        // Initialize with Bonaire stations
+        loadStations('bonaire');
+    </script>
+</body>
+</html>
