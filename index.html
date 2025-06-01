@@ -3,369 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siwor Bonaire Radio - Caribbean Radio Hub</title>
+    <title>Siwor Clock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0038A8; /* Bonaire blue */
-            --secondary: #F9D70B; /* Bonaire yellow */
-            --accent: #E5173D; /* Caribbean red */
+            --text-color-day: black;
+            --text-glow-day: 0 0 10px #fff, 0 0 20px #fff;
+            --text-color-night: white;
+            --text-glow-night: 0 0 10px #000, 0 0 20px #000;
+            --settings-bg-day: rgba(255, 255, 255, 0.9);
+            --settings-bg-night: rgba(0, 0, 0, 0.9);
         }
-        
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        
-        .tagline {
-            font-style: italic;
-            margin-bottom: 1rem;
-        }
-        
-        .country-selector {
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 1rem 0;
-        }
-        
-        .country-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 20px;
-            background-color: var(--secondary);
-            color: #333;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .country-btn:hover, .country-btn.active {
-            background-color: var(--accent);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .radio-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 1rem;
-        }
-        
-        .radio-card {
-            background: white;
-            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease, color 1s ease;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            color: var(--text-color-day);
         }
-        
-        .radio-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .radio-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        
-        .radio-info {
-            padding: 1rem;
-        }
-        
-        .radio-name {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-        
-        .radio-slogan {
-            font-style: italic;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-        
-        .radio-controls {
+
+        .time-container {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-        }
-        
-        .play-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .play-btn:hover {
-            background-color: var(--accent);
-        }
-        
-        .volume-control {
-            width: 100px;
-        }
-        
-        .now-playing {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .now-playing-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .now-playing-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        footer {
-            background-color: #333;
-            color: white;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 20px;
             text-align: center;
-            padding: 1rem;
-            margin-top: 60px; /* Space for now playing bar */
+        }
+
+        .time {
+            font-size: clamp(3rem, 15vw, 8rem);
+            font-weight: 700;
+            text-shadow: var(--text-glow-day);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .date {
+            font-size: clamp(1rem, 4vw, 2rem);
+            text-shadow: var(--text-glow-day);
+            margin: 10px 0 0;
+        }
+
+        .location {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
+            text-shadow: var(--text-glow-day);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: calc(100% - 100px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Night mode styles */
+        body.night {
+            color: var(--text-color-night);
+        }
+
+        body.night .time,
+        body.night .date,
+        body.night .location {
+            text-shadow: var(--text-glow-night);
+        }
+
+        /* Settings button */
+        .settings-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        body.night .settings-btn {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        body.night .settings-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Settings modal */
+        .settings-modal {
+            position: fixed;
+            right: 20px;
+            bottom: 70px;
+            background: var(--settings-bg-day);
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 300px;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        body.night .settings-modal {
+            background: var(--settings-bg-night);
+        }
+
+        .settings-modal.visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-modal h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .timezone-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: white;
+            color: black;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        body.night .timezone-select {
+            background: #333;
+            color: white;
+            border-color: #555;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+            padding: 5px;
+        }
+
+        body.night .close-btn {
+            color: #aaa;
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 600px) {
+            .time {
+                font-size: clamp(2.5rem, 20vw, 5rem);
+            }
+            
+            .date {
+                font-size: clamp(0.9rem, 5vw, 1.5rem);
+            }
+            
+            .location {
+                font-size: clamp(0.7rem, 4vw, 1rem);
+                bottom: 15px;
+                left: 15px;
+            }
+            
+            .settings-modal {
+                right: 10px;
+                bottom: 60px;
+                width: calc(100% - 20px);
+                max-width: none;
+            }
+            
+            .settings-btn {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+
+        /* Prevent text selection */
+        .time, .date, .location {
+            user-select: none;
+            -webkit-user-select: none;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">Siwor Bonaire Radio</div>
-        <div class="tagline">Your gateway to Caribbean sounds</div>
-        
-        <div class="country-selector">
-            <button class="country-btn active" data-country="bonaire">Bonaire</button>
-            <button class="country-btn" data-country="curacao">Curaçao</button>
-            <button class="country-btn" data-country="aruba">Aruba</button>
-            <button class="country-btn" data-country="saba">Saba</button>
-            <button class="country-btn" data-country="sintmaarten">Sint Maarten</button>
-        </div>
-    </header>
-    
-    <main>
-        <div class="radio-container" id="radio-stations">
-            <!-- Radio stations will be loaded here -->
-        </div>
-    </main>
-    
-    <div class="now-playing" id="now-playing" style="display: none;">
-        <div class="now-playing-info">
-            <img src="" alt="Station Logo" class="now-playing-image" id="now-playing-image">
-            <div>
-                <div id="now-playing-name">Station Name</div>
-                <div id="now-playing-slogan">Station Slogan</div>
-            </div>
-        </div>
-        <div class="radio-controls">
-            <audio id="audio-player" controls></audio>
-            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-control" id="volume-control">
+    <div class="time-container">
+        <h1 class="time" id="time">00:00:00</h1>
+        <p class="date" id="date">Monday, January 1, 2000</p>
+    </div>
+    <div class="location" id="location">Loading location...</div>
+
+    <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24">
+            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+        </svg>
+    </button>
+
+    <div class="settings-modal" id="settingsModal">
+        <button class="close-btn" id="closeBtn" aria-label="Close">×</button>
+        <h3>Settings</h3>
+        <div class="form-group">
+            <label for="timezoneSelect">Timezone:</label>
+            <select id="timezoneSelect" class="timezone-select">
+                <option value="auto">Auto-detect</option>
+                <!-- Timezone options will be populated by JavaScript -->
+            </select>
         </div>
     </div>
-    
-    <footer>
-        &copy; 2023 Siwor Bonaire Radio | All rights reserved
-    </footer>
-    
+
     <script>
-        // Country data (you would fetch this from your PHP files in a real implementation)
-        const countries = {
-            bonaire: {
-                name: "Bonaire",
-                endpoint: "https://siwor.icu/countries/bon.php",
-                stations: []
-            },
-            curacao: {
-                name: "Curaçao",
-                endpoint: "https://siwor.icu/countries/cur.php",
-                stations: []
-            },
-            aruba: {
-                name: "Aruba",
-                endpoint: "https://siwor.icu/countries/aru.php",
-                stations: []
-            },
-            saba: {
-                name: "Saba",
-                endpoint: "https://siwor.icu/countries/sab.php",
-                stations: []
-            },
-            sintmaarten: {
-                name: "Sint Maarten",
-                endpoint: "https://siwor.icu/countries/sxm.php",
-                stations: []
-            }
-        };
-        
+        // Background images
+        const DAY_BG = "https://files.catbox.moe/8v27ek.webp";
+        const NIGHT_BG = "https://files.catbox.moe/d0hgqt.jpg";
+
+        // Global variables
+        let currentTimezone = 'auto';
+        let detectedTimezone = 'UTC';
+        let countryTimezones = [];
+        let locationData = {};
+        let settingsModalOpen = false;
+
         // DOM elements
-        const radioContainer = document.getElementById('radio-stations');
-        const countryButtons = document.querySelectorAll('.country-btn');
-        const nowPlayingBar = document.getElementById('now-playing');
-        const audioPlayer = document.getElementById('audio-player');
-        const volumeControl = document.getElementById('volume-control');
-        
-        // Currently playing station
-        let currentStation = null;
-        
-        // Load stations for a country
-        async function loadStations(countryCode) {
+        const timeElement = document.getElementById('time');
+        const dateElement = document.getElementById('date');
+        const locationElement = document.getElementById('location');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeBtn = document.getElementById('closeBtn');
+        const timezoneSelect = document.getElementById('timezoneSelect');
+
+        // Initialize the clock
+        async function initClock() {
             try {
-                // In a real implementation, you would fetch from the endpoint:
-                // const response = await fetch(countries[countryCode].endpoint);
-                // const data = await response.json();
+                // Fetch location data
+                const locationResponse = await fetch('https://nanoxyte.xyz/api/iplookup');
+                locationData = await locationResponse.json();
                 
-                // For this example, we'll use mock data
-                const mockData = {
-                    data: [
-                        {
-                            id: 101,
-                            website: "https://www.bonairefm.com",
-                            type: "radio",
-                            images: {
-                                logo: "https://via.placeholder.com/300x150?text=Bonaire+FM",
-                                avatar: "https://via.placeholder.com/125x125?text=Bonaire+FM",
-                                thumbnail: "https://via.placeholder.com/197x125?text=Bonaire+FM"
-                            },
-                            views: 450,
-                            cat: "Variety",
-                            slogan: "The Voice of Bonaire",
-                            name: "Bonaire FM 92.5",
-                            videoStatus: 0,
-                            nameId: "bonairefm925",
-                            url: "https://stream.example.com/bonairefm",
-                            mimeType: "audio"
-                        },
-                        {
-                            id: 102,
-                            website: "https://www.caribbeanhits.com",
-                            type: "radio",
-                            images: {
-                                logo: "https://via.placeholder.com/300x150?text=Caribbean+Hits",
-                                avatar: "https://via.placeholder.com/125x125?text=Caribbean+Hits",
-                                thumbnail: "https://via.placeholder.com/197x125?text=Caribbean+Hits"
-                            },
-                            views: 320,
-                            cat: "Music",
-                            slogan: "All the Caribbean hits",
-                            name: "Caribbean Hits 98.7",
-                            videoStatus: 0,
-                            nameId: "caribbeanhits987",
-                            url: "https://stream.example.com/caribbeanhits",
-                            mimeType: "audio"
-                        }
-                    ]
-                };
+                // Update location display with flag emoji
+                updateLocationDisplay();
                 
-                countries[countryCode].stations = mockData.data;
-                displayStations(countryCode);
+                // Load timezones data
+                const timezonesResponse = await fetch('https://raw.githubusercontent.com/osmanyz/country-timezone/main/data/country.json');
+                const timezonesData = await timezonesResponse.json();
+                
+                // Find timezone for this country
+                const countryInfo = timezonesData.find(c => c.code === locationData.country_code);
+                if (countryInfo) {
+                    detectedTimezone = countryInfo.timezones[0].name;
+                    countryTimezones = countryInfo.timezones;
+                    
+                    // Populate timezone select
+                    populateTimezoneSelect(countryInfo.timezones);
+                }
+                
+                // Start clock with auto-detected timezone
+                updateClock();
+                setInterval(updateClock, 1000);
+                
             } catch (error) {
-                console.error("Error loading stations:", error);
-                radioContainer.innerHTML = `<div class="error">Failed to load stations. Please try again later.</div>`;
+                console.error('Error initializing clock:', error);
+                // Fallback to local time if there's an error
+                locationElement.textContent = 'Location unavailable';
+                updateClock();
+                setInterval(updateClock, 1000);
             }
         }
-        
-        // Display stations for a country
-        function displayStations(countryCode) {
-            const stations = countries[countryCode].stations;
-            
-            if (!stations || stations.length === 0) {
-                radioContainer.innerHTML = `<div class="no-stations">No stations found for ${countries[countryCode].name}.</div>`;
-                return;
+
+        // Update location display
+        function updateLocationDisplay() {
+            let locationText = '';
+            if (locationData.city && locationData.region) {
+                locationText = `${locationData.city}, ${locationData.region}`;
+            } else if (locationData.city) {
+                locationText = locationData.city;
+            } else if (locationData.region) {
+                locationText = locationData.region;
+            } else if (locationData.country) {
+                locationText = locationData.country;
+            } else {
+                locationText = 'Location unavailable';
             }
             
-            radioContainer.innerHTML = stations.map(station => `
-                <div class="radio-card" data-id="${station.id}">
-                    <img src="${station.images.logo}" alt="${station.name}" class="radio-image">
-                    <div class="radio-info">
-                        <div class="radio-name">${station.name}</div>
-                        <div class="radio-slogan">${station.slogan}</div>
-                        <div class="radio-controls">
-                            <button class="play-btn" data-url="${station.url}">Play</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            if (locationData.flag_emoji) {
+                locationText += ` ${locationData.flag_emoji}`;
+            }
             
-            // Add event listeners to play buttons
-            document.querySelectorAll('.play-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const stationId = this.closest('.radio-card').dataset.id;
-                    const station = stations.find(s => s.id == stationId);
-                    playStation(station);
-                });
+            locationElement.textContent = locationText;
+        }
+
+        // Populate timezone select dropdown
+        function populateTimezoneSelect(timezones) {
+            // Clear existing options (keeping only the auto-detect)
+            while (timezoneSelect.options.length > 1) {
+                timezoneSelect.remove(1);
+            }
+            
+            // Add timezone options for this country
+            timezones.forEach(tz => {
+                const option = document.createElement('option');
+                option.value = tz.name;
+                // Format timezone name for display (replace underscores with spaces)
+                option.textContent = tz.name.replace(/_/g, ' ').replace(/\//g, ' / ');
+                timezoneSelect.appendChild(option);
             });
         }
-        
-        // Play a station
-        function playStation(station) {
-            currentStation = station;
+
+        // Update clock display
+        function updateClock() {
+            let timezone;
+            if (currentTimezone === 'auto') {
+                timezone = detectedTimezone;
+            } else {
+                timezone = currentTimezone;
+            }
             
-            // Update now playing bar
-            document.getElementById('now-playing-name').textContent = station.name;
-            document.getElementById('now-playing-slogan').textContent = station.slogan;
-            document.getElementById('now-playing-image').src = station.images.avatar;
+            const now = timezone ? new Date(new Date().toLocaleString('en-US', { timeZone: timezone })) : new Date();
             
-            // Set audio source
-            audioPlayer.src = station.url;
-            audioPlayer.play();
+            // Format time
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
             
-            // Show now playing bar
-            nowPlayingBar.style.display = 'flex';
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', options);
+            dateElement.textContent = dateStr;
+            
+            // Set day/night mode
+            const isNight = hours >= 18 || hours < 6;
+            document.body.className = isNight ? 'night' : '';
+            document.body.style.backgroundImage = `url(${isNight ? NIGHT_BG : DAY_BG})`;
         }
-        
+
         // Event listeners
-        countryButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Update active button
-                countryButtons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Load stations for selected country
-                loadStations(this.dataset.country);
-            });
+        settingsBtn.addEventListener('click', toggleSettingsModal);
+        closeBtn.addEventListener('click', toggleSettingsModal);
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (settingsModalOpen && 
+                !settingsModal.contains(e.target) && 
+                e.target !== settingsBtn) {
+                toggleSettingsModal();
+            }
         });
-        
-        volumeControl.addEventListener('input', function() {
-            audioPlayer.volume = this.value;
+
+        function toggleSettingsModal() {
+            settingsModalOpen = !settingsModalOpen;
+            settingsModal.classList.toggle('visible', settingsModalOpen);
+        }
+
+        timezoneSelect.addEventListener('change', (e) => {
+            currentTimezone = e.target.value;
+            updateClock();
+            
+            // Save preference to localStorage
+            localStorage.setItem('siworClockTimezone', currentTimezone);
         });
-        
-        // Initialize with Bonaire stations
-        loadStations('bonaire');
+
+        // Load saved timezone preference
+        function loadPreferences() {
+            const savedTimezone = localStorage.getItem('siworClockTimezone');
+            if (savedTimezone) {
+                currentTimezone = savedTimezone;
+                if (timezoneSelect.querySelector(`option[value="${savedTimezone}"]`)) {
+                    timezoneSelect.value = savedTimezone;
+                }
+            }
+        }
+
+        // Initialize the clock when the page loads
+        window.addEventListener('load', () => {
+            loadPreferences();
+            initClock();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Adjust font sizes or other responsive elements if needed
+        });
     </script>
 </body>
 </html>
